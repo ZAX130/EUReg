@@ -17,6 +17,10 @@ Paper link: [[link]](https://link.springer.com/chapter/10.1007/978-3-032-04937-7
 
 <img width="1559" height="306" alt="image" src="https://github.com/user-attachments/assets/e4df2049-a4b8-4dec-a5fa-ac0cdcbc7909" />
 
+## Instruction
+
+After downloading the dataset, change the 'train_dir' and 'val_dir' in train_xx.py and infer_xx.py, and then run them.
+
 ## Citation
 If you find the code useful, please cite our paper.
 ```
