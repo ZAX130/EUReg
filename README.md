@@ -10,10 +10,10 @@ Paper link: [[link]](https://link.springer.com/chapter/10.1007/978-3-032-04937-7
 
 | Dirname  | Experiment Settings| Data link |
 | ---------- | -----------| -----------|
-| CAMUS_same   | i   | CAMUS_data |
-| CAMUS_diff   | iii (EUReg10), iv (EUReg20)   | CAMUS2_data |
-| proreg_same   | ii   | proregus2_data   |
-| proreg_diff   | v (EUReg10), vi (EUReg20)  | proregus2_data |
+| CAMUS_same   | i   | CAMUS_data uploading|
+| CAMUS_diff   | iii (EUReg10), iv (EUReg20)   | CAMUS2_data uploading |
+| proreg_same   | ii   | proregus2_data uploading  |
+| proreg_diff   | v (EUReg10), vi (EUReg20)  | proregus2_data uploading|
 
 <img width="1559" height="306" alt="image" src="https://github.com/user-attachments/assets/e4df2049-a4b8-4dec-a5fa-ac0cdcbc7909" />
 
