@@ -1,4 +1,4 @@
-# (MICCAI2025) EUReg: End-to-End Framework for Efficient 2D-3D Ultrasound Registration
+# EUReg: End-to-End Framework for Efficient 2D-3D Ultrasound Registration (MICCAI2025) 
 
 By Haiqiao Wang & Yi Wang
 
