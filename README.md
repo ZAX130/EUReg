@@ -10,10 +10,10 @@ Paper link: [[link]](https://link.springer.com/chapter/10.1007/978-3-032-04937-7
 
 | Dirname  | Experiment Settings| Data link |
 | ---------- | -----------| -----------|
-| CAMUS_same   | i   | Todo |
-| CAMUS_diff   | iii (EUReg10), iv (EUReg20)   | Todo |
-| proreg_same   | ii   | Todo   |
-| proreg_diff   | v (EUReg10), vi (EUReg20)  | Todo |
+| CAMUS_same   | i   | CAMUS_data |
+| CAMUS_diff   | iii (EUReg10), iv (EUReg20)   | CAMUS2_data |
+| proreg_same   | ii   | proregus2_data   |
+| proreg_diff   | v (EUReg10), vi (EUReg20)  | proregus2_data |
 
 <img width="1559" height="306" alt="image" src="https://github.com/user-attachments/assets/e4df2049-a4b8-4dec-a5fa-ac0cdcbc7909" />
 
@@ -29,3 +29,5 @@ If you find the code useful, please cite our paper.
   organization={Springer}
 }
 ```
+
+Our code and data are partially adopted from [CUReg](https://github.com/LLEIHIT/CU-Reg), [FVRNet](https://github.com/DIAL-RPI/FVR-Net), and [ProReg](https://muregpro.github.io/data.html). Thanks for their work.
