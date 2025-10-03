@@ -36,4 +36,4 @@ If you find the code useful, please cite our paper.
 }
 ```
 
-Our code and data are partially adopted from [CUReg](https://github.com/LLEIHIT/CU-Reg), [FVRNet](https://github.com/DIAL-RPI/FVR-Net), and [ProReg](https://muregpro.github.io/data.html). Thanks for their work.
+Our code and data are partially adopted from [CUReg](https://github.com/LLEIHIT/CU-Reg), [FVRNet](https://github.com/DIAL-RPI/FVR-Net), [CAMUS](https://humanheart-project.creatis.insa-lyon.fr/database/#collection/6373703d73e9f0047faa1bc8), and [ProReg](https://muregpro.github.io/data.html). Thanks for their work.
