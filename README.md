@@ -13,7 +13,7 @@ Paper link: [[link]](https://link.springer.com/chapter/10.1007/978-3-032-04937-7
 | CAMUS_same   | i   | [[link]](https://drive.usercontent.google.com/download?id=1Jmyl7KsPmwh16VJKt4v4Et_c4-RkaAIJ&export=download&authuser=0)|
 | CAMUS_diff   | iii (EUReg10), iv (EUReg20)   | [[link]](https://drive.usercontent.google.com/download?id=1hDqsefF_KSxWwIAPFyMTmAPK3ACvFuVO&export=download&authuser=0)|
 | proreg_same   | ii   | [[link]](https://drive.usercontent.google.com/download?id=1optAZ9a9bFl83K9yhmqDFqp1TAUMH9xo&export=download&authuser=0)  |
-| proreg_diff   | v (EUReg10), vi (EUReg20)  | [[link]](https://drive.usercontent.google.com/download?id=1optAZ9a9bFl83K9yhmqDFqp1TAUMH9xo&export=download&authuser=0)|
+| proreg_diff   | v (EUReg10), vi (EUReg20)  | [[link]](https://drive.usercontent.google.com/download?id=1optAZ9a9bFl83K9yhmqDFqp1TAUMH9xo&export=download&authuser=0)(same as previous)|
 
 <img width="1559" height="306" alt="image" src="https://github.com/user-attachments/assets/e4df2049-a4b8-4dec-a5fa-ac0cdcbc7909" />
 
