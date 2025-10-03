@@ -9,7 +9,7 @@ Paper link: [[link]](https://link.springer.com/chapter/10.1007/978-3-032-04937-7
 ## Correspondence
 
 | Dirname  | Experiment Settings| Data link |
-| ---------- | -----------| -----------|
+| :----------: | :-----------:| :-----------:|
 | CAMUS_same   | i   | [[link]](https://drive.usercontent.google.com/download?id=1Jmyl7KsPmwh16VJKt4v4Et_c4-RkaAIJ&export=download&authuser=0)|
 | CAMUS_diff   | iii (EUReg10), iv (EUReg20)   | [[link]](https://drive.usercontent.google.com/download?id=1hDqsefF_KSxWwIAPFyMTmAPK3ACvFuVO&export=download&authuser=0)|
 | proreg_same   | ii   | [[link]](https://drive.usercontent.google.com/download?id=1optAZ9a9bFl83K9yhmqDFqp1TAUMH9xo&export=download&authuser=0)  |
