@@ -226,21 +226,23 @@ class CDFE(nn.Module):
         vol: input slice(B, C, H, W)
         '''
         B, C, T, H, W = vol.shape
-        Vs, Ss = T * H * W, H * W
+        _,_, Hs, Ws = slice.shape
+        Vs, Ss = T * H * W, Hs * Ws
 
-        Q = self.proj2d(slice).view(B, Ss, -1)  # B, H, W, d -> B, HW, d
+        Q = self.proj2d(slice).view(B, Ss, -1)  # B, H, W, d -> B, HsWs, d
         K = self.proj3d(vol).view(B, Vs, -1)  # B, T, H, W, d -> B, THW, d
 
         Attn = Q @ K.transpose(1, 2)
-        Attn = Attn.softmax(dim=-1)  # (B, H*W, T*H*W)
+        Attn = Attn.softmax(dim=-1)  # (B, Hs*Ws, T*H*W)
 
-        G_pred = Attn @ self.G_vol  # (B, H*W, 3)
-        flow = G_pred.transpose(1, 2).view(B, 3, H, W) - self.G_slice
+        G_pred = Attn @ self.G_vol  # (B, Hs*Ws, 3)
+        flow = G_pred.transpose(1, 2).view(B, 3, Hs, Ws ) - self.G_slice
 
         return flow
 
+
 class TransNet(nn.Module):
-    def __init__(self, full_vol_size, deep_vol_size, input_channels=3, slope=0.01):
+    def __init__(self, full_vol_size, deep_vol_size,deep_slice_size, input_channels=3, slope=0.01):
         super(TransNet, self).__init__()
         self.full_vol_size = full_vol_size
         self.deep_vol_size = deep_vol_size
@@ -250,12 +252,10 @@ class TransNet(nn.Module):
         self.conv2 = nn.Conv2d(32, 64, kernel_size=3, stride=1, padding=1)
         self.conv3 = nn.Conv2d(64, 128, kernel_size=3, stride=1, padding=1)
         self.pool = nn.AvgPool2d(2, 2)  # Down-sample by 2
-        self.global_pool = nn.AdaptiveAvgPool2d(1)
-
         self.relu = nn.LeakyReLU(negative_slope=slope)
         # Fully connected layers for regression
         # Global feature aggregation
-        self.fc1 = nn.Linear(128 * (deep_vol_size[1] // 8) * (deep_vol_size[2] // 8),
+        self.fc1 = nn.Linear(128 * (deep_slice_size[0] // 8) * (deep_slice_size[1] // 8),
                              256)  # Adjust for pooled spatial size
         self.fc2 = nn.Linear(256, 128)
         self.fc3 = nn.Linear(128, 3)  # Output 3 rotation parameters (roll, pitch, yaw)
@@ -269,8 +269,6 @@ class TransNet(nn.Module):
         return ntrans
 
     def forward(self, x):
-        # flow_avg = self.global_pool(x)
-
         # Feature extraction
         x = self.relu(self.conv1(x))  # (B, 32, H, W)
         x = self.pool(x)  # (B, 32, H/2, W/2)
@@ -290,21 +288,20 @@ class TransNet(nn.Module):
 
 
 class RotationNet(nn.Module):
-    def __init__(self, vol_shape, input_channels=3, slope=0.01):
+    def __init__(self, vol_shape,slice_shape, input_channels=3, slope=0.01):
         super(RotationNet, self).__init__()
 
         self.vol_shape = vol_shape
-        self.R = math.sqrt((vol_shape[1] // 2) ** 2 + (vol_shape[2] // 2) ** 2)
         # Feature extraction with convolutional layers
+        self.R = math.sqrt((slice_shape[0] // 2) ** 2 + (slice_shape[1] // 2) ** 2)
         self.conv1 = nn.Conv2d(input_channels, 32, kernel_size=3, stride=1, padding=1)
         self.conv2 = nn.Conv2d(32, 64, kernel_size=3, stride=1, padding=1)
         self.conv3 = nn.Conv2d(64, 128, kernel_size=3, stride=1, padding=1)
         self.pool = nn.MaxPool2d(2, 2)  # Down-sample by 2
-
         self.relu = nn.LeakyReLU(negative_slope=slope)
         # Fully connected layers for regression
         # Global feature aggregation
-        self.fc1 = nn.Linear(128 * (vol_shape[1] // 8) * (vol_shape[2] // 8), 256)  # Adjust for pooled spatial size
+        self.fc1 = nn.Linear(128 * (slice_shape[0] // 8) * (slice_shape[1] // 8), 256)  # Adjust for pooled spatial size
         self.fc2 = nn.Linear(256, 128)
         self.fc3 = nn.Linear(128, 3)  # Output 3 rotation parameters (roll, pitch, yaw)
         self.fc3.weight = nn.Parameter(Normal(0, 1e-5).sample(self.fc3.weight.shape))
@@ -334,8 +331,9 @@ class RotationNet(nn.Module):
         return rotation_params
 
 
+
 class EUReg(nn.Module):
-    def __init__(self, vol_shape, in_channel=1, first_channel=8, dim=6):
+    def __init__(self, vol_shape,slice_shape, in_channel=1, first_channel=8, dim=6):
         super(EUReg, self).__init__()
         c = first_channel
         self.encoder3d = Encoder3D(in_channel=in_channel, first_channel=c)
@@ -343,13 +341,14 @@ class EUReg(nn.Module):
 
         L = 4
         deep_vol_shape = [s // 2 ** (L - 1) for s in vol_shape]
+        deep_slice_shape = [s // 2 ** (L - 1) for s in slice_shape]
         self.deep_vol_shape = deep_vol_shape
 
-        self.CDFE = CDFE(vol_inshape=deep_vol_shape, slice_inshape=deep_vol_shape[1:],
+        self.CDFE = CDFE(vol_inshape=deep_vol_shape, slice_inshape=deep_slice_shape,
                        in_channels_2d=2 ** (L - 1) * c, in_channels_3d=2 ** (L - 1) * c, dim=dim)
 
-        self.transnet = TransNet(vol_shape, deep_vol_shape)
-        self.rotnet = RotationNet(deep_vol_shape, input_channels=3)
+        self.transnet = TransNet(vol_shape, deep_vol_shape, deep_slice_shape)
+        self.rotnet = RotationNet(deep_vol_shape, deep_slice_shape)
 
     def forward(self, vol, slice):
         Fv = self.encoder3d(vol)
@@ -385,10 +384,10 @@ class EUReg_Flow(nn.Module):
 
 
 class EUReg_FRT(EUReg):
-    def __init__(self, vol_shape, in_channel=1, first_channel=8, dim=6):
-        super().__init__(vol_shape, in_channel, first_channel, dim)
+    def __init__(self, vol_shape,slice_shape, in_channel=1, first_channel=8, dim=6):
+        super().__init__(vol_shape,slice_shape, in_channel, first_channel, dim)
 
-        self.transformer = FrameRigidTransformer(vol_shape[1:])
+        self.transformer = FrameRigidTransformer(slice_shape)
 
     def forward(self, vol, slice):
         pred_dof, flow = super().forward(vol, slice)
@@ -397,10 +396,10 @@ class EUReg_FRT(EUReg):
         return pred_dof, flow, moved
 
 class EUReg_FRT_Test(EUReg):
-    def __init__(self, vol_shape, in_channel=1, first_channel=8, dim=6):
-        super().__init__(vol_shape, in_channel, first_channel, dim)
+    def __init__(self, vol_shape,slice_shape, in_channel=1, first_channel=8, dim=6):
+        super().__init__(vol_shape,slice_shape, in_channel, first_channel, dim)
 
-        self.transformer = FrameRigidTransformer(vol_shape[1:])
+        self.transformer = FrameRigidTransformer(slice_shape)
 
     def forward(self, vol, slice):
         pred_dof, _ = super().forward(vol, slice)
@@ -409,10 +408,10 @@ class EUReg_FRT_Test(EUReg):
         return pred_dof, moved
 
 if __name__ == '__main__':
-    model = EUReg((32, 128, 128)).cuda()
-    model2 = EUReg_FRT((32, 128, 128)).cuda()
+    model = EUReg((32, 192, 192), (128, 128)).cuda()
+    model2 = EUReg_FRT((32, 192, 192), (128, 128)).cuda()
     f = torch.ones(2, 1, 128, 128).cuda()
-    v = torch.ones(2, 1, 32, 128, 128).cuda()
+    v = torch.ones(2, 1, 32, 192, 192).cuda()
     output = model(v, f)
     for a in output:
         print(a.shape)
